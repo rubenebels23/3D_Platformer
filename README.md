@@ -34,6 +34,3 @@ Developed from scratch to practice and explore core platformer mechanics.
 5. Controls: **WASD** to move  
 
 ---
-
-## 📜 License
-MIT License — free to use and adapt
