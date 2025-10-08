@@ -1,0 +1,9 @@
+[33mdf242a1[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Feat added coyoteTime & preventing to double jump
+[33m1ce9c16[m Merge branch 'main' of https://github.com/rubenebels23/3D_Platformer
+[33med311f5[m feat: Refactored PlayerMovement: added third-person camera offset, mouse look  | Version 0,2
+[33me1164cc[m Update README.md
+[33m670b054[m Create README.md
+[33me162009[m feat: add variables & basic WASD movement with CharacterController | Version 0,1
+[33m01e32c6[m chore: player & camera scaffolding (tags, layers, rig, target, managers)
+[33m0a1d6fe[m feat: graybox test room (ground, platforms, ramp, death floor, spawn, goal)
+[33m2d1de95[m Initial commit
