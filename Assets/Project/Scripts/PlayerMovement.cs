@@ -4,32 +4,46 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    #region --- all variables ---  
+
+    #region --- Player Settings ---
     public float moveSpeed = 4f;
     public float sprintSpeed = 10f;
-    public float jumpSpeed = 3f;
+    public float jumpHeight = 6f;
     public float gravity = -9.81f;
+    #endregion
+
+    #region --- Components & References ---
     public LayerMask groundMask;
     public Camera playerCamera;
+    private CharacterController controller;
+    #endregion
+
+    #region --- Camera Settings ---
     public float cameraDistance = 5f;
+    public Vector2 turn;
+    public float sensitivity = 1f;
+    #endregion
+
+    #region --- State Variables ---
     private Vector3 playerVelocity;
     private bool groundedPlayer;
-
+    private bool isSprinting = false;
     private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
 
-    private bool isSprinting = false;
+    private bool hasDoubleJumped;
 
-    public Vector2 turn;
-    public float sensitivity = 1f;
 
-    private CharacterController controller;
+    #endregion
+
+    #endregion --- all variables ---
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
     }
-
     void Update()
     {
         // Walking
@@ -74,7 +88,12 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // *Ground check
+        // *Ground check
         groundedPlayer = Physics.CheckSphere(transform.position - new Vector3(0, controller.height / 2, 0), 0.25f, groundMask);
+
+        // Reset double jump when grounded
+        if (groundedPlayer)
+            hasDoubleJumped = false;
 
         // *Coyote time: reset only if grounded AND not moving up
         if (groundedPlayer && playerVelocity.y <= 0f)
@@ -89,9 +108,18 @@ public class PlayerMovement : MonoBehaviour
         // Jump (uses coyote)
         if (Input.GetKeyDown(KeyCode.Space) && coyoteTimeCounter > 0f)
         {
-            playerVelocity.y = jumpSpeed;
+            playerVelocity.y = jumpHeight;
             coyoteTimeCounter = 0f; // no second jump in same window
         }
+
+        // Double jump
+        else if (Input.GetKeyDown(KeyCode.Space) && !groundedPlayer && !hasDoubleJumped)
+        {
+            playerVelocity.y = jumpHeight;
+            hasDoubleJumped = true;
+        }
+
+
 
         // Gravity (with ground snap)
         if (groundedPlayer && playerVelocity.y < 0f)
