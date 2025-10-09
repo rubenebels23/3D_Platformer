@@ -10,7 +10,8 @@ public class PlayerMovement : MonoBehaviour
     public float moveSpeed = 4f;
     public float sprintSpeed = 10f;
     public float jumpHeight = 6f;
-    public float gravity = -9.81f;
+    public float gravity = -9.807f;
+    public float inAirGlide = 5f;
     #endregion
 
     #region --- Components & References ---
@@ -29,12 +30,9 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 playerVelocity;
     private bool groundedPlayer;
     private bool isSprinting = false;
-    private float coyoteTime = 0.2f;
+    private float coyoteTime = 2f;
     private float coyoteTimeCounter;
-
-    private bool hasDoubleJumped;
-
-
+    private bool airJumpAvailable = true; 
     #endregion
 
     #endregion --- all variables ---
@@ -78,7 +76,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (isSprinting)
             {
-                Debug.Log("Sprint Triggered");
+                // Debug.Log("Sprint Triggered");
                 moveSpeed = sprintSpeed;
             }
             else
@@ -87,46 +85,34 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // *Ground check
-        // *Ground check
+        //* Ground check
         groundedPlayer = Physics.CheckSphere(transform.position - new Vector3(0, controller.height / 2, 0), 0.25f, groundMask);
 
-        // Reset double jump when grounded
+        // Reset air jumps on ground
         if (groundedPlayer)
-            hasDoubleJumped = false;
+            airJumpAvailable = true;
 
-        // *Coyote time: reset only if grounded AND not moving up
+        // Coyote timer
         if (groundedPlayer && playerVelocity.y <= 0f)
-        {
-            coyoteTimeCounter = coyoteTime; // ready to jump
-        }
+            coyoteTimeCounter = coyoteTime;
         else
-        {
-            coyoteTimeCounter = Mathf.Max(0f, coyoteTimeCounter - Time.deltaTime); // ticking down
-        }
+            coyoteTimeCounter = Mathf.Max(0f, coyoteTimeCounter - Time.deltaTime);
 
-        // Jump (uses coyote)
+        // Ground or coyote jump (does NOT consume air jump)
         if (Input.GetKeyDown(KeyCode.Space) && coyoteTimeCounter > 0f)
         {
             playerVelocity.y = jumpHeight;
-            coyoteTimeCounter = 0f; // no second jump in same window
+            coyoteTimeCounter = 0f; // spent coyote
         }
-
-        // Double jump
-        else if (Input.GetKeyDown(KeyCode.Space) && !groundedPlayer && !hasDoubleJumped)
+        //* air/double jump (consumes 1)
+        else if (Input.GetKeyDown(KeyCode.Space) && !groundedPlayer && airJumpAvailable)
         {
             playerVelocity.y = jumpHeight;
-            hasDoubleJumped = true;
+            airJumpAvailable = false;
         }
 
-
-
-        // Gravity (with ground snap)
-        if (groundedPlayer && playerVelocity.y < 0f)
-        {
-            playerVelocity.y = -2f; // stay stuck to ground
-        }
-        else
+        // Gravity
+        if (!groundedPlayer)
         {
             playerVelocity.y += gravity * Time.deltaTime; // normal fall
         }
