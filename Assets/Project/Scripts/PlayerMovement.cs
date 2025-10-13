@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    #region --- all variables ---  
+    #region --- all variables ---
 
     #region --- Player Settings ---
     public float moveSpeed = 4f;
     public float sprintSpeed = 10f;
     public float jumpHeight = 6f;
     public float gravity = -9.807f;
-    public float inAirGlide = 5f;
+    public float airDrag = 2f;
+    public float coyoteTime = 0.2f;
     #endregion
 
     #region --- Components & References ---
@@ -26,13 +27,13 @@ public class PlayerMovement : MonoBehaviour
     public float sensitivity = 1f;
     #endregion
 
-    #region --- State Variables ---
+    #region --- State ---
     private Vector3 playerVelocity;
+    private Vector3 glideVelocity;         // horizontal momentum
     private bool groundedPlayer;
     private bool isSprinting = false;
-    private float coyoteTime = 2f;
+    private bool airJumpAvailable = true;  // one extra jump in air
     private float coyoteTimeCounter;
-    private bool airJumpAvailable = true; 
     #endregion
 
     #endregion --- all variables ---
@@ -44,46 +45,12 @@ public class PlayerMovement : MonoBehaviour
     }
     void Update()
     {
+        #region --- Sprinting | coyotetimer | input ---
         // Walking
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
-
-        // get input direction in world space
-        Vector3 move;
-        Vector3 forward = transform.TransformDirection(Vector3.forward);
-        Vector3 right = transform.TransformDirection(Vector3.right);
-
-        //combine input axes into one move vector
-        move = (forward * z) + (right * x);
-
-        // move the player
-        controller.Move(move * moveSpeed * Time.deltaTime);
-
-
-        //!sprint
-
-        GetInput();
-        SprintPlayer();
-
-        void GetInput()
-        {
-            if (Input.GetKeyDown(KeyCode.LeftShift)) isSprinting = true;
-            if (Input.GetKeyUp(KeyCode.LeftShift)) isSprinting = false;
-            //GetKeyUp detects when a key is released.
-        }
-
-        void SprintPlayer()
-        {
-            if (isSprinting)
-            {
-                // Debug.Log("Sprint Triggered");
-                moveSpeed = sprintSpeed;
-            }
-            else
-            {
-                moveSpeed = 4f;
-            }
-        }
+        if (Input.GetKeyDown(KeyCode.LeftShift)) isSprinting = true;
+        if (Input.GetKeyUp(KeyCode.LeftShift)) isSprinting = false;
 
         //* Ground check
         groundedPlayer = Physics.CheckSphere(transform.position - new Vector3(0, controller.height / 2, 0), 0.25f, groundMask);
@@ -95,16 +62,58 @@ public class PlayerMovement : MonoBehaviour
         // Coyote timer
         if (groundedPlayer && playerVelocity.y <= 0f)
             coyoteTimeCounter = coyoteTime;
+
+        //counting down when in air to 0
         else
             coyoteTimeCounter = Mathf.Max(0f, coyoteTimeCounter - Time.deltaTime);
 
+
+        // get input direction in world space
+        Vector3 forward = transform.TransformDirection(Vector3.forward);
+        Vector3 right = transform.TransformDirection(Vector3.right);
+        //get combined direction 
+        Vector3 moveDir = (forward * z + right * x).normalized;
+        #endregion --- Sprinting | coyotetimer | input ---
+
+        #region --- Movement & Gliding ---
+        //!AI made targetspeed: It is the switch between moveSpeed and sprintSpeed so my normal moveSpeed won't get overwritten the whole time.
+        float targetSpeed;
+        if (isSprinting) targetSpeed = sprintSpeed;
+        else targetSpeed = moveSpeed;
+
+
+        // Checks if you’re pressing movement keys.
+        // If yes:
+
+        // figures out which way and how fast you should go.
+
+        // Then glides your current glideVelocity toward that target (Lerp)
+        if (x != 0f || z != 0f)
+        {
+            // input: accelerate to target speed
+            Vector3 targetVel = moveDir * targetSpeed;
+            glideVelocity = Vector3.Lerp(glideVelocity, targetVel, 5f * Time.deltaTime);
+        }
+        else if (!groundedPlayer)
+        {
+            // if there is no input in air: Slow down horizontally with Lerp
+            glideVelocity = Vector3.Lerp(glideVelocity, Vector3.zero, airDrag * Time.deltaTime);
+        }
+        else
+        {
+            // no input on ground = stop
+            glideVelocity = Vector3.zero;
+        }
+        #endregion --- Movement & Gliding ---
+
+        #region --- Jumping & Gravity ---
         // Ground or coyote jump (does NOT consume air jump)
         if (Input.GetKeyDown(KeyCode.Space) && coyoteTimeCounter > 0f)
         {
             playerVelocity.y = jumpHeight;
-            coyoteTimeCounter = 0f; // spent coyote
+            coyoteTimeCounter = 0f;
         }
-        //* air/double jump (consumes 1)
+        //* double jump (consumes 1)
         else if (Input.GetKeyDown(KeyCode.Space) && !groundedPlayer && airJumpAvailable)
         {
             playerVelocity.y = jumpHeight;
@@ -114,19 +123,25 @@ public class PlayerMovement : MonoBehaviour
         // Gravity
         if (!groundedPlayer)
         {
-            playerVelocity.y += gravity * Time.deltaTime; // normal fall
+            playerVelocity.y += gravity * Time.deltaTime;
         }
 
-        controller.Move(playerVelocity * Time.deltaTime);
+        // move the player
+        controller.Move((glideVelocity + playerVelocity) * Time.deltaTime);
 
+        #endregion --- Jumping & Gravity ---        
+
+        #region --- Camera Control ---
         // Mouse look
         turn.x += Input.GetAxis("Mouse X") * sensitivity;
         turn.y += Input.GetAxis("Mouse Y") * sensitivity;
         turn.y = Mathf.Clamp(turn.y, -35f, 10f);
 
+        //! Rotate player horizontally (left/right)
+
         transform.rotation = Quaternion.Euler(0, turn.x, 0);
 
-        //! Calculate camera rotation for vertical look
+        //! Calculate camera rotation (vertical + horizontal look)
         Quaternion cameraRotation = Quaternion.Euler(-turn.y, turn.x, 0);
 
         // Set camera position and rotation for third-person (offset)
@@ -139,5 +154,6 @@ public class PlayerMovement : MonoBehaviour
 
         //! makes the camera look to the players head
         playerCamera.transform.LookAt(transform.position + Vector3.up * 1.5f);
+        #endregion
     }
 }
