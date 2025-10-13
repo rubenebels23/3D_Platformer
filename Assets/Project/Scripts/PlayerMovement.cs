@@ -122,13 +122,17 @@ public class PlayerMovement : MonoBehaviour
         {
             playerVelocity.y = jumpHeight;
             coyoteTimeCounter = 0f;
-            player?.TakeDamage(jumpCost);
+            if (player != null)
+                player.TakeDamage(jumpCost);
+
         }
         else if (Input.GetKeyDown(KeyCode.Space) && !groundedPlayer && airJumpAvailable)
         {
             playerVelocity.y = jumpHeight;
             airJumpAvailable = false;
-            player?.TakeDamage(jumpCost);
+            if (player != null)
+                player.TakeDamage(jumpCost);
+
         }
         // Gravity
         if (!groundedPlayer)
