@@ -34,7 +34,7 @@ public class TeleportController : MonoBehaviour
 
     void TryTeleport()
     {
-        // don’t teleport if missing refs
+        // don’t teleport if missing references
         if (playerCamera == null || playerMovement == null)
         {
             Debug.LogWarning("TeleportController: Missing references!");
