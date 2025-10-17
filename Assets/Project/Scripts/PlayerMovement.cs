@@ -9,10 +9,11 @@ public class PlayerMovement : MonoBehaviour
     #region --- Player Settings ---
     public float moveSpeed = 4f;
     public float sprintSpeed = 10f;
-    public float jumpHeight = 6f;
+    public float jumpHeight = 10f;
     [HideInInspector] public float baseJumpHeight;
     public float gravity = -9.807f;
     public float airDrag = 2f;
+    // how long after leaving ground you can still jump
     public float coyoteTime = 0.2f;
     public float jumpCost = 10f;
     private Player player;
@@ -36,7 +37,9 @@ public class PlayerMovement : MonoBehaviour
     public bool groundedPlayer;
     public bool isSprinting = false;
     public bool airJumpAvailable = true;  // one extra jump in air
+
     private float coyoteTimeCounter;
+
     #endregion
 
     #endregion --- all variables ---
@@ -68,7 +71,7 @@ public class PlayerMovement : MonoBehaviour
         if (groundedPlayer)
             airJumpAvailable = true;
 
-        // Coyote timer
+        // Coyote timer for jumping after leaving ground
         if (groundedPlayer && playerVelocity.y <= 0f)
             coyoteTimeCounter = coyoteTime;
 
@@ -85,7 +88,7 @@ public class PlayerMovement : MonoBehaviour
         #endregion --- Sprinting | coyotetimer | Input ---
 
         #region --- Movement & Gliding ---
-        //!AI made targetspeed: It is the switch between moveSpeed and sprintSpeed so my normal moveSpeed won't get overwritten the whole time.
+        //! targetspeed is the switch between moveSpeed and sprintSpeed so my normal moveSpeed won't get overwritten the whole time.
         float targetSpeed;
         if (isSprinting) targetSpeed = sprintSpeed;
         else targetSpeed = moveSpeed;
@@ -170,4 +173,46 @@ public class PlayerMovement : MonoBehaviour
         playerCamera.transform.LookAt(transform.position + Vector3.up * 1.5f);
         #endregion
     }
+    // Runs after Update() every frame
+    void LateUpdate()
+    {
+        // 1️⃣ Only do this if we're standing on something
+        //
+        if (groundedPlayer == false)
+            return;
+
+        //2️⃣ Shoot a ray straight down to see what’s below the player
+        RaycastHit hitInfo;
+        bool hitSomething = Physics.Raycast(
+            transform.position,       // start at player position
+            Vector3.down,             // cast straight down
+            out hitInfo,              // store info about what we hit
+            controller.height + 0.5f, // how far the ray goes
+            groundMask                // only hit ground layers
+        );
+        if (hitSomething == false)
+            return;
+
+        //3️⃣ Check if what we hit is a moving platform
+        VelocityCalculator platform = hitInfo.collider.GetComponent<VelocityCalculator>();
+        if (platform == null)
+            return;
+
+        //4️⃣ Get how far the platform moved this frame
+        Vector3 platformMovement = platform.Delta;
+        if (platformMovement == Vector3.zero)
+            return;
+
+        //5️⃣ Move the player by the same amount so it stays in sync
+        controller.Move(platformMovement);
+    }
+
+    //Reference to teleport the player
+    public void TeleportTo(Vector3 newPos)
+    {
+        controller.enabled = false;     // disable CharacterController for safety
+        transform.position = newPos;    // move the player
+        controller.enabled = true;      // re-enable controller
+    }
+
 }

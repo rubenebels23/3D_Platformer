@@ -60,9 +60,10 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        
         currentHealth = Mathf.Max(0f, currentHealth - amount);
         healthBar.SetHealth(currentHealth);
-        Debug.Log("STAMINA ERAFFF!!");
+        // Debug.Log("STAMINA ERAFFF!!");
     }
 
 }
