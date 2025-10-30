@@ -67,6 +67,25 @@ public class TeleportController : MonoBehaviour
             // 4️⃣ Raise slightly to avoid clipping
             targetPosition.y += 1f;
 
+
+            // 4b)  Get the CharacterController
+            CharacterController cc = playerMovement.GetComponent<CharacterController>();
+
+            // figure out where the capsule would be at the target
+            Vector3 bottom = targetPosition + Vector3.up * cc.radius;
+            Vector3 top = targetPosition + Vector3.up * (cc.height - cc.radius);
+
+            // check if anything solid occupies that capsule
+            bool blocked = Physics.CheckCapsule(bottom, top, cc.radius, ~0, QueryTriggerInteraction.Ignore);
+            // use ~0 to check against everything, or use your own "solid" mask
+
+            if (blocked)
+            {
+                Debug.Log("Teleport blocked: not enough headroom / space.");
+                return;
+            }
+
+
             // 5️⃣ Teleport
             playerMovement.TeleportTo(targetPosition);
             cooldownRemaining = teleportCooldown; //  reset cooldown

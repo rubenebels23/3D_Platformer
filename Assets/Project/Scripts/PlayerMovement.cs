@@ -176,12 +176,12 @@ public class PlayerMovement : MonoBehaviour
     // Runs after Update() every frame
     void LateUpdate()
     {
-        // 1️⃣ Only do this if we're standing on something
+        // 1) Only do this if we're standing on something
         //
         if (groundedPlayer == false)
             return;
 
-        //2️⃣ Shoot a ray straight down to see what’s below the player
+        //2) Shoot a ray straight down to see what’s below the player
         RaycastHit hitInfo;
         bool hitSomething = Physics.Raycast(
             transform.position,       // start at player position
@@ -193,18 +193,18 @@ public class PlayerMovement : MonoBehaviour
         if (hitSomething == false)
             return;
 
-        //3️⃣ Check if what we hit is a moving platform
+        //3) Check if what we hit is a moving platform
         VelocityCalculator platform = hitInfo.collider.GetComponent<VelocityCalculator>();
         if (platform == null)
             return;
 
-        //4️⃣ Get how far the platform moved this frame
+        //4) Get how far the platform moved this frame
         Vector3 platformMovement = platform.Delta;
         if (platformMovement == Vector3.zero)
             return;
 
-        //5️⃣ Move the player by the same amount so it stays in sync
-        controller.Move(platformMovement);
+        //5) Move the player by the same amount so it stays in sync
+        controller.Move(platformMovement * Time.deltaTime);
     }
 
     //Reference to teleport the player
