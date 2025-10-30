@@ -2,18 +2,18 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public float maxHealth = 100f;
-    public float currentHealth;
+    public float maxStamina = 100f;
+    public float currentStamina;
     public float staminaDrainPerSec = 5f;
-    public HealthBar healthBar;
+    public StaminaBar StaminaBar;
 
     private PlayerMovement movement;
 
     void Start()
     {
         movement = GetComponent<PlayerMovement>();
-        currentHealth = maxHealth;
-        healthBar.SetMaxHealth(maxHealth);
+        currentStamina = maxStamina;
+        StaminaBar.SetMaxStamina(maxStamina);
     }
 
     void Update()
@@ -31,21 +31,21 @@ public class Player : MonoBehaviour
                 TakeDamage(staminaDrainPerSec * Time.deltaTime);
             }
             // regenerate stamina when not sprinting
-            else if (currentHealth < maxHealth)
+            else if (currentStamina < maxStamina)
             {
-                currentHealth = Mathf.Min(maxHealth, currentHealth + (staminaDrainPerSec / 2f) * Time.deltaTime);
-                healthBar.SetHealth(currentHealth);
+                currentStamina = Mathf.Min(maxStamina, currentStamina + staminaDrainPerSec * Time.deltaTime);
+                StaminaBar.SetStamina(currentStamina);
             }
         }
 
 
-        if (currentHealth <= 0)
+        if (currentStamina <= 0)
         {
             movement.isSprinting = false;
         }
 
 
-        if (currentHealth <= 11)
+        if (currentStamina <= 11)
         {
             movement.jumpHeight = 0f;
             movement.jumpCost = 0f;
@@ -57,12 +57,12 @@ public class Player : MonoBehaviour
         }
 
     }
-
+    
     public void TakeDamage(float amount)
     {
-        
-        currentHealth = Mathf.Max(0f, currentHealth - amount);
-        healthBar.SetHealth(currentHealth);
+
+        currentStamina = Mathf.Max(0f, currentStamina - amount);
+        StaminaBar.SetStamina(currentStamina);
         // Debug.Log("STAMINA ERAFFF!!");
     }
 

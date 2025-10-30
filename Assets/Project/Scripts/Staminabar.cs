@@ -1,16 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
-public class HealthBar : MonoBehaviour
+public class StaminaBar : MonoBehaviour
 {   
 
     public Slider slider;
 
-    public void SetMaxHealth(float health)
+    public void SetMaxStamina(float health)
     {
         slider.maxValue = health;
         slider.value = health;
     }
-    public void SetHealth(float health)
+    public void SetStamina(float health)
     { 
         slider.value = health;  
     }
