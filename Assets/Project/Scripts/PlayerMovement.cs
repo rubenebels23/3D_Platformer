@@ -36,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 glideVelocity;         // horizontal momentum
     public bool groundedPlayer;
     public bool isSprinting = false;
+    
     public bool airJumpAvailable = true;  // one extra jump in air
 
     private float coyoteTimeCounter;

@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     public StaminaBar StaminaBar;
 
 
-    public MagicBar MagicBar;
+    public BloodBar BloodBar;
 
     private PlayerMovement movement;
 
@@ -18,8 +18,8 @@ public class Player : MonoBehaviour
         currentStamina = maxStamina;
         StaminaBar.SetMaxStamina(maxStamina);
 
-        // currentMagic = maxMagic;
-        // MagicBar.SetMaxMagic(maxMagic);
+        // currentblood = maxblood;
+        // bloodBar.SetMaxblood(maxblood);
         
     }
 
@@ -55,7 +55,7 @@ public class Player : MonoBehaviour
         if (currentStamina <= 11)
         {
             movement.jumpHeight = 0f;
-            movement.jumpCost = 0f;
+            movement.jumpCost = 0f;            
         }
         else
         {

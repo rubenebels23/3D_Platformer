@@ -16,9 +16,9 @@ public class TeleportController : MonoBehaviour
 
     private Player player;
 
-    public MagicBar magicBar;
-    public float maxMagic = 100f;
-    public float currentMagic;
+    public BloodBar bloodBar;
+    public float maxBlood = 100f;
+    public float currentBlood;
 
 
     void Start()
@@ -26,8 +26,8 @@ public class TeleportController : MonoBehaviour
         playerMovement = GetComponent<PlayerMovement>();
         player = GetComponent<Player>();
 
-        currentMagic = maxMagic;
-        magicBar.SetMaxMagic(maxMagic);
+        currentBlood = maxBlood;
+        bloodBar.SetMaxBlood(maxBlood);
     }
 
     void Update()
@@ -99,7 +99,7 @@ public class TeleportController : MonoBehaviour
 
             // 5️⃣ Teleport
             playerMovement.TeleportTo(targetPosition);
-            TakeDamageMagic(20f);
+            TakeDamageBlood(20f);
             cooldownRemaining = teleportCooldown; //  reset cooldown
 
             Debug.Log($"Teleported to {targetPosition}");
@@ -110,11 +110,28 @@ public class TeleportController : MonoBehaviour
         }
     }
 
-    public void TakeDamageMagic(float amount)
+    public void TakeDamageBlood(float amount)
     {
 
-        currentMagic = Mathf.Max(0f, currentMagic - amount);
-        magicBar.SetMagic(currentMagic);
-        Debug.Log("MAGIC ERAFFF!!");
+        currentBlood = Mathf.Max(0f, currentBlood - amount);
+        bloodBar.SetBlood(currentBlood);
+        Debug.Log("BLOOD ERAFFF!!");
     }
+
+
+    public void RestoreBlood(float amount)
+    {
+        if (currentBlood >= maxBlood)
+        {
+            Debug.Log("Already full health; potion ignored.");
+            return;
+        }
+
+        currentBlood = Mathf.Min(currentBlood + amount, maxBlood);
+        bloodBar.SetBlood(currentBlood);
+        Debug.Log("Blood restored!");
+        
+
+    }
+
 }
