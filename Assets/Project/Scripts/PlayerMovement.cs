@@ -173,9 +173,12 @@ public class PlayerMovement : MonoBehaviour
         playerCamera.transform.LookAt(transform.position + Vector3.up * 1.5f);
         #endregion
     }
+
+    
     // Runs after Update() every frame
     void LateUpdate()
     {
+        
         // 1) Only do this if we're standing on something
         //
         if (groundedPlayer == false)
@@ -199,12 +202,12 @@ public class PlayerMovement : MonoBehaviour
             return;
 
         //4) Get how far the platform moved this frame
-        Vector3 platformMovement = platform.Delta;
+        Vector3 platformMovement = platform.GetVelocity(transform);
         if (platformMovement == Vector3.zero)
             return;
 
         //5) Move the player by the same amount so it stays in sync
-        controller.Move(platformMovement * Time.deltaTime);
+        controller.Move(platformMovement);
     }
 
     //Reference to teleport the player
