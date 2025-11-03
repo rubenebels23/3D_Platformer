@@ -7,16 +7,27 @@ public class TeleportController : MonoBehaviour
     public Camera playerCamera;              // drag your player camera here
 
     [Header("Teleport Settings")]
-    public float maxTeleportDistance = 20f;  // how far you can teleport
+    public float maxTeleportDistance = 20f;
     public LayerMask groundMask;             // layers considered valid ground
-    public KeyCode teleportKey = KeyCode.T;  // key to trigger teleport
+
     public float teleportCooldown = 5f;      // cooldown in seconds
 
     private float cooldownRemaining = 0f;
 
+    private Player player;
+
+    public MagicBar magicBar;
+    public float maxMagic = 100f;
+    public float currentMagic;
+
+
     void Start()
     {
         playerMovement = GetComponent<PlayerMovement>();
+        player = GetComponent<Player>();
+
+        currentMagic = maxMagic;
+        magicBar.SetMaxMagic(maxMagic);
     }
 
     void Update()
@@ -26,9 +37,10 @@ public class TeleportController : MonoBehaviour
             cooldownRemaining -= Time.deltaTime;
 
         // check for key press
-        if (Input.GetKeyDown(teleportKey))
+        if (Input.GetKeyDown(KeyCode.T))
         {
             TryTeleport();
+
         }
     }
 
@@ -85,9 +97,9 @@ public class TeleportController : MonoBehaviour
                 return;
             }
 
-
             // 5️⃣ Teleport
             playerMovement.TeleportTo(targetPosition);
+            TakeDamageMagic(20f);
             cooldownRemaining = teleportCooldown; //  reset cooldown
 
             Debug.Log($"Teleported to {targetPosition}");
@@ -96,5 +108,13 @@ public class TeleportController : MonoBehaviour
         {
             Debug.Log("No valid surface to teleport to!");
         }
+    }
+
+    public void TakeDamageMagic(float amount)
+    {
+
+        currentMagic = Mathf.Max(0f, currentMagic - amount);
+        magicBar.SetMagic(currentMagic);
+        Debug.Log("MAGIC ERAFFF!!");
     }
 }

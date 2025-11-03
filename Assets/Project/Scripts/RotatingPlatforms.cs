@@ -20,7 +20,6 @@ public class RotatingPlatforms : MonoBehaviour
         transform.position = new Vector3(transform.position.x, 1f + Mathf.PingPong(Time.time * MoveSpeed, 9f), transform.position.z);
     }
 
-    //velocity calculator maken
 }
     
 

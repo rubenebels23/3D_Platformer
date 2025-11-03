@@ -7,6 +7,9 @@ public class Player : MonoBehaviour
     public float staminaDrainPerSec = 5f;
     public StaminaBar StaminaBar;
 
+
+    public MagicBar MagicBar;
+
     private PlayerMovement movement;
 
     void Start()
@@ -14,6 +17,10 @@ public class Player : MonoBehaviour
         movement = GetComponent<PlayerMovement>();
         currentStamina = maxStamina;
         StaminaBar.SetMaxStamina(maxStamina);
+
+        // currentMagic = maxMagic;
+        // MagicBar.SetMaxMagic(maxMagic);
+        
     }
 
     void Update()
@@ -28,7 +35,7 @@ public class Player : MonoBehaviour
             // drain only when sprinting + moving
             if (movement.isSprinting && isMoving)
             {
-                TakeDamage(staminaDrainPerSec * Time.deltaTime);
+                TakeDamageStamina(staminaDrainPerSec * Time.deltaTime);
             }
             // regenerate stamina when not sprinting
             else if (currentStamina < maxStamina)
@@ -58,7 +65,7 @@ public class Player : MonoBehaviour
 
     }
     
-    public void TakeDamage(float amount)
+    public void TakeDamageStamina(float amount)
     {
 
         currentStamina = Mathf.Max(0f, currentStamina - amount);
