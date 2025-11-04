@@ -36,7 +36,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 glideVelocity;         // horizontal momentum
     public bool groundedPlayer;
     public bool isSprinting = false;
-    
+
     public bool airJumpAvailable = true;  // one extra jump in air
 
     private float coyoteTimeCounter;
@@ -60,8 +60,9 @@ public class PlayerMovement : MonoBehaviour
     {
         #region --- Sprinting | coyotetimer | Input ---
         // Walking
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
+        float x = Input.GetAxisRaw("Horizontal");
+        float z = Input.GetAxisRaw("Vertical");
+
         if (Input.GetKeyDown(KeyCode.LeftShift)) isSprinting = true;
         if (Input.GetKeyUp(KeyCode.LeftShift)) isSprinting = false;
 
@@ -75,6 +76,9 @@ public class PlayerMovement : MonoBehaviour
         // Coyote timer for jumping after leaving ground
         if (groundedPlayer && playerVelocity.y <= 0f)
             coyoteTimeCounter = coyoteTime;
+        if (groundedPlayer && playerVelocity.y < 0f)
+            playerVelocity.y = -2f; // tiny downward force to keep grounded but stop fall
+
 
         //counting down when in air to 0
         else
@@ -115,7 +119,7 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             // no Input on ground = stop
-            glideVelocity = Vector3.zero;
+            glideVelocity = Vector3.Lerp(glideVelocity, Vector3.zero, 10f * Time.deltaTime);
         }
         #endregion --- Movement & Gliding ---
 
@@ -175,11 +179,11 @@ public class PlayerMovement : MonoBehaviour
         #endregion
     }
 
-    
+
     // Runs after Update() every frame
     void LateUpdate()
     {
-        
+
         // 1) Only do this if we're standing on something
         //
         if (groundedPlayer == false)
