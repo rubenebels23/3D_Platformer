@@ -14,14 +14,12 @@ public class BloodPotion : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        var teleport = collider.GetComponent<TeleportController>();
-        if (teleport == null) return;
+        var player = collider.GetComponent<Player>();
+        if (player == null) return;
 
-        
-
-        if (teleport.currentBlood < teleport.maxBlood)
+        if (player.currentBlood < player.maxBlood)
         {
-            teleport.RestoreBlood(bloodRestoreAmount);
+            player.RestoreBlood(bloodRestoreAmount);
 
             AudioSource.PlayClipAtPoint(pickupSound, transform.position);
 

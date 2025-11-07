@@ -51,7 +51,7 @@ public class Enemy : MonoBehaviour
             AttackPlayer();
     }
 
-   
+
     //  PATROL / CHASE / ATTACK 
     void Patroling()
     {
@@ -78,7 +78,7 @@ public class Enemy : MonoBehaviour
 
     void ChasePlayer()
     {
-        if (visibleTargets.Count > 0)
+        if (visibleTargets.Count > 0)   
             agent.SetDestination(visibleTargets[0].position);
         else
             agent.SetDestination(player.position);
@@ -91,7 +91,12 @@ public class Enemy : MonoBehaviour
 
         if (!alreadyAttacked)
         {
-            Debug.Log($"Enemy hit player for {attackDamage} damage!");
+            Player p = player.GetComponent<Player>();
+            if (p != null)
+            {
+                p.TakeDamageBlood(attackDamage);
+            }
+
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
         }

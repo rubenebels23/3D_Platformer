@@ -3,36 +3,23 @@ using UnityEngine;
 public class TeleportController : MonoBehaviour
 {
     [Header("References")]
-    public PlayerMovement playerMovement;    // drag your PlayerMovement here
-    public Camera playerCamera;              // drag your player camera here
-
-    [Header("Teleport Settings")]
+    public PlayerMovement playerMovement;
+    public Camera playerCamera;
     public float maxTeleportDistance = 20f;
-    public LayerMask groundMask;             // layers considered valid ground
-
-    public float teleportCooldown = 5f;      // cooldown in seconds
+    public LayerMask groundMask;
+    public float teleportCooldown = 5f;
 
     private float cooldownRemaining = 0f;
-
     private Player player;
-
-    public BloodBar bloodBar;
-    public float maxBlood = 100f;
-    public float currentBlood;
-
-    
 
 
     void Start()
     {
         playerMovement = GetComponent<PlayerMovement>();
         player = GetComponent<Player>();
-
-        currentBlood = maxBlood;
-        bloodBar.SetMaxBlood(maxBlood);
     }
 
-    void Update()
+   void Update()
     {
         // decrease cooldown timer every frame
         if (cooldownRemaining > 0)
@@ -94,7 +81,7 @@ public class TeleportController : MonoBehaviour
 
             // 5️⃣ Teleport
             playerMovement.TeleportTo(targetPosition);
-            TakeDamageBlood(20f);
+            player.TakeDamageBlood(20f);
             cooldownRemaining = teleportCooldown; //  reset cooldown
 
             Debug.Log($"Teleported to {targetPosition}");
@@ -104,29 +91,4 @@ public class TeleportController : MonoBehaviour
             Debug.Log("No valid surface to teleport to!");
         }
     }
-
-    public void TakeDamageBlood(float amount)
-    {
-
-        currentBlood = Mathf.Max(0f, currentBlood - amount);
-        bloodBar.SetBlood(currentBlood);
-        Debug.Log("BLOOD ERAFFF!!");
-    }
-
-
-    public void RestoreBlood(float amount)
-    {
-        if (currentBlood >= maxBlood)
-        {
-            Debug.Log("Already full health; potion ignored.");
-            return;
-        }
-
-        currentBlood = Mathf.Min(currentBlood + amount, maxBlood);
-        bloodBar.SetBlood(currentBlood);
-        Debug.Log("Blood restored!");
-        
-
-    }
-
 }
