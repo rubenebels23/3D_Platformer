@@ -20,6 +20,8 @@ public class TeleportController : MonoBehaviour
     public float maxBlood = 100f;
     public float currentBlood;
 
+    
+
 
     void Start()
     {
@@ -50,13 +52,6 @@ public class TeleportController : MonoBehaviour
         if (playerCamera == null || playerMovement == null)
         {
             Debug.LogWarning("TeleportController: Missing references!");
-            return;
-        }
-
-        // stop if not grounded
-        if (!playerMovement.groundedPlayer)
-        {
-            Debug.Log("Can't teleport while mid-air!");
             return;
         }
 

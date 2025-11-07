@@ -12,8 +12,8 @@ public class PlayerMovement : MonoBehaviour
     public float jumpHeight = 10f;
     [HideInInspector] public float baseJumpHeight;
     public float gravity = -9.807f;
-    public float airDrag = 2f;
-    // how long after leaving ground you can still jump
+    public float airDrag = 2f; // how long after leaving ground you can still jump
+
     public float coyoteTime = 0.2f;
     public float jumpCost = 10f;
     private Player player;
@@ -53,7 +53,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>();
-        player = GetComponent<Player>();           // get reference
+        player = GetComponent<Player>();
         Cursor.lockState = CursorLockMode.Locked;
     }
     void Update()
@@ -76,8 +76,6 @@ public class PlayerMovement : MonoBehaviour
         // Coyote timer for jumping after leaving ground
         if (groundedPlayer && playerVelocity.y <= 0f)
             coyoteTimeCounter = coyoteTime;
-        if (groundedPlayer && playerVelocity.y < 0f)
-            playerVelocity.y = -2f; // tiny downward force to keep grounded but stop fall
 
 
         //counting down when in air to 0
@@ -90,6 +88,20 @@ public class PlayerMovement : MonoBehaviour
         Vector3 right = transform.TransformDirection(Vector3.right);
         //get combined direction 
         Vector3 moveDir = (forward * z + right * x).normalized;
+
+
+        // Camera distance adjustment when sprinting
+        if (isSprinting == true && (x != 0f || z != 0f))
+        {
+            //camera gets smoothed back when u sprint
+            cameraDistance = Mathf.Lerp(cameraDistance, 6f, 7f * Time.deltaTime);
+        }
+        else
+        {
+            //camera gets smoothed back when u stop sprinting
+            cameraDistance = Mathf.Lerp(cameraDistance, 5f, 5f * Time.deltaTime);
+
+        }
         #endregion --- Sprinting | coyotetimer | Input ---
 
         #region --- Movement & Gliding ---
@@ -118,7 +130,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            // no Input on ground = stop
+            // no Input on ground = slowly stop
             glideVelocity = Vector3.Lerp(glideVelocity, Vector3.zero, 10f * Time.deltaTime);
         }
         #endregion --- Movement & Gliding ---
@@ -157,7 +169,7 @@ public class PlayerMovement : MonoBehaviour
         // Mouse look
         turn.x += Input.GetAxis("Mouse X") * sensitivity;
         turn.y += Input.GetAxis("Mouse Y") * sensitivity;
-        turn.y = Mathf.Clamp(turn.y, -35f, 10f);
+        turn.y = Mathf.Clamp(turn.y, -60f, 20f);
 
         //! Rotate player horizontally (left/right)
 

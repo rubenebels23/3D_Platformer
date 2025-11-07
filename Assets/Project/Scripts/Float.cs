@@ -14,6 +14,7 @@ public class FloatOnly : MonoBehaviour
 
     void Update()
     {
+        
         float newY = Mathf.Sin(Time.time * floatSpeed) * floatHeight;
         transform.position = startPos + new Vector3(0f, newY, 0f);
     }
