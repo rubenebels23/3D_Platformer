@@ -64,7 +64,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    // -------- BLOOD (HEALTH) --------
+    // BLOOD (HEALTH) 
     public void TakeDamageBlood(float amount)
     {
         currentBlood = Mathf.Max(0f, currentBlood - amount);
@@ -82,12 +82,32 @@ public class Player : MonoBehaviour
         Debug.Log($"Blood restored! HP: {currentBlood}");
     }
 
-    void Die()
+    public void Die()
     {
         Debug.Log("Player died!");
+
+        // Destroy(gameObject);
+        Respawn();
+
     }
 
-    // -------- STAMINA --------
+    public void Respawn()
+    {
+        Debug.Log("AAAAA");
+
+        currentBlood = maxBlood;
+        BloodBar.SetBlood(currentBlood);
+
+        currentStamina = maxStamina;
+        StaminaBar.SetStamina(currentStamina);
+
+        transform.position = new Vector3(9.04f, 1f, 15.92f);
+
+        Debug.Log("Player respawned!");
+
+    }
+
+    // STAMINA
     public void TakeDamageStamina(float amount)
     {
         currentStamina = Mathf.Max(0f, currentStamina - amount);
