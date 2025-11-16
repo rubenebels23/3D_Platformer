@@ -2,16 +2,18 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [Header("Stamina")]
+    #region Stamina
     public float maxStamina = 100f;
     public float currentStamina;
     public float staminaDrainPerSec = 5f;
     public StaminaBar StaminaBar;
+    #endregion
 
-    [Header("Blood (Health)")]
+    #region Blood (Health)
     public float maxBlood = 100f;
     public float currentBlood;
     public BloodBar BloodBar;
+    #endregion
 
     private PlayerMovement movement;
 
@@ -82,6 +84,14 @@ public class Player : MonoBehaviour
         Debug.Log($"Blood restored! HP: {currentBlood}");
     }
 
+    //! DELETE LATER, GOOD FOR TESTING
+    public void RestoreStamina(float amount)
+    {
+        currentStamina = Mathf.Min(maxStamina, currentStamina + amount);
+        StaminaBar.SetStamina(currentStamina);
+        Debug.Log($"Stamina restored! Stamina: {currentStamina}");
+    }
+
     public void Die()
     {
         Debug.Log("Player died!");
@@ -93,7 +103,7 @@ public class Player : MonoBehaviour
 
     public void Respawn()
     {
-        Debug.Log("AAAAA");
+        // Debug.Log("AAAAA");
 
         currentBlood = maxBlood;
         BloodBar.SetBlood(currentBlood);
@@ -101,12 +111,19 @@ public class Player : MonoBehaviour
         currentStamina = maxStamina;
         StaminaBar.SetStamina(currentStamina);
 
-        transform.position = new Vector3(9.04f, 1f, 15.92f);
+        CharacterController controller = GetComponent<CharacterController>();
+        if (controller != null)
+            controller.enabled = false;
+
+        // Move player
+        transform.position = new Vector3(-57.24f, 1f, 8.7f);
+
+        // Re-enable controller
+        if (controller != null)
+            controller.enabled = true;
 
         Debug.Log("Player respawned!");
-
     }
-
     // STAMINA
     public void TakeDamageStamina(float amount)
     {

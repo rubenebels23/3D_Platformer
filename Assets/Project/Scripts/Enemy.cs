@@ -5,19 +5,21 @@ using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
-    [Header("Vision Settings")]
+    #region Vision Settings
     public float viewRadius = 10f;
     [Range(0, 360)] public float viewAngle = 120f;
     public LayerMask targetMask;
     public LayerMask obstacleMask;
     public List<Transform> visibleTargets = new List<Transform>();
+    #endregion
 
-    [Header("AI Settings")]
+    #region AI Settings
     public float sightRange = 12f;
     public float attackRange = 3f;
-    public float walkPointRange = 8f;
+    public float walkPointRange = 100f;
     public float timeBetweenAttacks = 2f;
     public int attackDamage = 10; // damage per hit
+    #endregion
 
     private NavMeshAgent agent;
     private Transform player;
@@ -78,7 +80,7 @@ public class Enemy : MonoBehaviour
 
     void ChasePlayer()
     {
-        if (visibleTargets.Count > 0)   
+        if (visibleTargets.Count > 0)
             agent.SetDestination(visibleTargets[0].position);
         else
             agent.SetDestination(player.position);

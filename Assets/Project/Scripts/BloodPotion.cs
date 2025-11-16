@@ -6,6 +6,7 @@ public class BloodPotion : MonoBehaviour
     public int bloodRestoreAmount = 20;
     public GameObject pickupGlowPrefab; // Assign in Inspector
     public AudioClip pickupSound;
+    public int staminaRestoreAmount = 100;
 
     void Start()
     {
@@ -20,6 +21,7 @@ public class BloodPotion : MonoBehaviour
         if (player.currentBlood < player.maxBlood)
         {
             player.RestoreBlood(bloodRestoreAmount);
+            player.RestoreStamina(staminaRestoreAmount / 2); //! DELELTE LATER, GOOD FOR TESTING
 
             AudioSource.PlayClipAtPoint(pickupSound, transform.position);
 

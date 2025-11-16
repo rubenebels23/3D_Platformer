@@ -1,5 +1,6 @@
 // using System.Numerics;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -23,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask groundMask;
     public Camera playerCamera;
     private CharacterController controller;
+    public Animator animator;
     #endregion
 
     #region --- Camera Settings ---
@@ -63,9 +65,25 @@ public class PlayerMovement : MonoBehaviour
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKeyDown(KeyCode.LeftShift)) isSprinting = true;
-        if (Input.GetKeyUp(KeyCode.LeftShift)) isSprinting = false;
+        float speedValue = new Vector3(x, 0, z).magnitude;
+        animator.SetFloat("speed", speedValue, 0.0f, Time.deltaTime);
 
+        // Vector3 move = new Vector3(x, 0, z);
+
+        bool isMoving = Mathf.Abs(x) > 0.1f || Mathf.Abs(z) > 0.1f;
+
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && isMoving)
+        {
+            isSprinting = true;
+
+            animator.SetBool("isSprinting", true);
+        }
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            isSprinting = false;
+            animator.SetBool("isSprinting", false);
+        }
         //* Ground check
         groundedPlayer = Physics.CheckSphere(transform.position - new Vector3(0, controller.height / 2, 0), 0.25f, groundMask);
 
@@ -144,8 +162,16 @@ public class PlayerMovement : MonoBehaviour
             coyoteTimeCounter = 0f;
             if (player != null)
                 player.TakeDamageStamina(jumpCost);
+            animator.SetBool("isJumping", true);
 
         }
+
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            Debug.Log("Jump naar False");
+            animator.SetBool("isJumping", false);
+        }
+
         else if (Input.GetKeyDown(KeyCode.Space) && !groundedPlayer && airJumpAvailable)
         {
             playerVelocity.y = jumpHeight;
@@ -153,7 +179,16 @@ public class PlayerMovement : MonoBehaviour
             if (player != null)
                 player.TakeDamageStamina(jumpCost);
 
+            animator.SetBool("isJumping", true);
         }
+
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            Debug.Log("Jump naar False");
+            animator.SetBool("isJumping", false);
+        }
+
+
         // Gravity
         if (!groundedPlayer)
         {
@@ -181,14 +216,17 @@ public class PlayerMovement : MonoBehaviour
         // Set camera position and rotation for third-person (offset)
 
         //!positioning player camera
-        Vector3 offset = cameraRotation * new Vector3(0f, 0f, -cameraDistance);
+        Vector3 offset = cameraRotation * new Vector3(1f, 0f, -cameraDistance);
 
         //!setting to player camera | Following the player at fixed position
         playerCamera.transform.position = transform.position + offset;
 
         //! makes the camera look to the players head
-        playerCamera.transform.LookAt(transform.position + Vector3.up * 1.5f);
+        Vector3 pointToLookAt = cameraRotation * new Vector3(1f, 0f, 0f) + Vector3.up * 2f;
+        playerCamera.transform.LookAt(transform.position + pointToLookAt);
         #endregion
+
+
     }
 
 
@@ -234,5 +272,7 @@ public class PlayerMovement : MonoBehaviour
         transform.position = newPos;    // move the player
         controller.enabled = true;      // re-enable controller
     }
+
+
 
 }
