@@ -10,8 +10,7 @@ public class PlayerMovement : MonoBehaviour
     #region --- Player Settings ---
     public float moveSpeed = 4f;
     public float sprintSpeed = 10f;
-    public float jumpHeight = 10f;
-    [HideInInspector] public float baseJumpHeight;
+    public float jumpHeight = 2f;
     public float gravity = -9.807f;
     public float airDrag = 2f; // how long after leaving ground you can still jump
 
@@ -47,10 +46,6 @@ public class PlayerMovement : MonoBehaviour
 
     #endregion --- all variables ---
 
-    void Awake()
-    {
-        baseJumpHeight = jumpHeight; // store the original value once
-    }
 
     void Start()
     {
@@ -86,6 +81,7 @@ public class PlayerMovement : MonoBehaviour
         }
         //* Ground check
         groundedPlayer = Physics.CheckSphere(transform.position - new Vector3(0, controller.height / 2, 0), 0.25f, groundMask);
+
 
         // Reset air jumps on ground
         if (groundedPlayer)
@@ -162,15 +158,12 @@ public class PlayerMovement : MonoBehaviour
             coyoteTimeCounter = 0f;
             if (player != null)
                 player.TakeDamageStamina(jumpCost);
-            animator.SetBool("isJumping", true);
+            animator.SetTrigger("isJumping");
 
         }
 
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            Debug.Log("Jump naar False");
-            animator.SetBool("isJumping", false);
-        }
+        //! Niwuwe falling animatie toevoegen als je valt dan kan dit verholpen worden 
+
 
         else if (Input.GetKeyDown(KeyCode.Space) && !groundedPlayer && airJumpAvailable)
         {
@@ -178,14 +171,7 @@ public class PlayerMovement : MonoBehaviour
             airJumpAvailable = false;
             if (player != null)
                 player.TakeDamageStamina(jumpCost);
-
-            animator.SetBool("isJumping", true);
-        }
-
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            Debug.Log("Jump naar False");
-            animator.SetBool("isJumping", false);
+            animator.SetTrigger("isJumping");
         }
 
 

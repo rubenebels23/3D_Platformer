@@ -5,25 +5,21 @@ using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
-    #region Vision Settings
-    public float viewRadius = 10f;
-    [Range(0, 360)] public float viewAngle = 120f;
-    public LayerMask targetMask;
-    public LayerMask obstacleMask;
-    public List<Transform> visibleTargets = new List<Transform>();
-    #endregion
-
-    #region AI Settings
+    [Header("Vision Settings")]
     public float sightRange = 12f;
     public float attackRange = 3f;
+    public LayerMask targetMask;
+    public LayerMask obstacleMask;
+
+    [Header("AI Settings")]
     public float walkPointRange = 100f;
     public float timeBetweenAttacks = 2f;
-    public int attackDamage = 10; // damage per hit
-    #endregion
+    public int attackDamage = 10;
+
+    public Animator animator;
 
     private NavMeshAgent agent;
     private Transform player;
-
     private Vector3 walkPoint;
     private bool walkPointSet;
     private bool alreadyAttacked;
@@ -35,7 +31,6 @@ public class Enemy : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         player = GameObject.Find("Player")?.transform;
-
     }
 
     void Update()
@@ -45,25 +40,28 @@ public class Enemy : MonoBehaviour
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, targetMask);
         playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, targetMask);
 
+        // Choose state
         if (!playerInSightRange && !playerInAttackRange)
             Patroling();
         else if (playerInSightRange && !playerInAttackRange)
             ChasePlayer();
-        else if (playerInAttackRange && playerInSightRange)
+        else if (playerInAttackRange)
             AttackPlayer();
+
+        // Update animation states
+        animator.SetBool("isWalking", agent.velocity.magnitude > 0.1f && !playerInSightRange);
+        animator.SetBool("isRunning", agent.velocity.magnitude > 0.1f && playerInSightRange && !playerInAttackRange);
     }
 
 
-    //  PATROL / CHASE / ATTACK 
     void Patroling()
     {
+        agent.isStopped = false;  // <-- important
+
         if (!walkPointSet) SearchWalkPoint();
+        if (walkPointSet) agent.SetDestination(walkPoint);
 
-        if (walkPointSet)
-            agent.SetDestination(walkPoint);
-
-        Vector3 distanceToWalkPoint = transform.position - walkPoint;
-        if (distanceToWalkPoint.magnitude < 1f)
+        if (Vector3.Distance(transform.position, walkPoint) < 1f)
             walkPointSet = false;
     }
 
@@ -71,7 +69,6 @@ public class Enemy : MonoBehaviour
     {
         float randomX = Random.Range(-walkPointRange, walkPointRange);
         float randomZ = Random.Range(-walkPointRange, walkPointRange);
-
         walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
 
         if (Physics.Raycast(walkPoint, -transform.up, 2f, obstacleMask))
@@ -80,24 +77,26 @@ public class Enemy : MonoBehaviour
 
     void ChasePlayer()
     {
-        if (visibleTargets.Count > 0)
-            agent.SetDestination(visibleTargets[0].position);
-        else
+        agent.isStopped = false;  // <-- important
+
+        if (player != null)
             agent.SetDestination(player.position);
     }
 
     void AttackPlayer()
     {
+        agent.isStopped = true;
         agent.SetDestination(transform.position);
         transform.LookAt(player);
 
+        animator.SetBool("isAttacking", true);
+
         if (!alreadyAttacked)
         {
+            // damage
             Player p = player.GetComponent<Player>();
             if (p != null)
-            {
                 p.TakeDamageBlood(attackDamage);
-            }
 
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
@@ -106,8 +105,8 @@ public class Enemy : MonoBehaviour
 
     void ResetAttack()
     {
+        animator.SetBool("isAttacking", false);
+        agent.isStopped = false;
         alreadyAttacked = false;
     }
-
-
 }

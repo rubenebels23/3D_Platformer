@@ -19,7 +19,7 @@ public class TeleportController : MonoBehaviour
         player = GetComponent<Player>();
     }
 
-   void Update()
+    void Update()
     {
         // decrease cooldown timer every frame
         if (cooldownRemaining > 0)
@@ -50,7 +50,7 @@ public class TeleportController : MonoBehaviour
         }
 
         // 1️⃣ Create a ray from camera forward
-        Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
+        Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f, 0f));
 
         // 2️⃣ Shoot the ray
         if (Physics.Raycast(ray, out RaycastHit hitInfo, maxTeleportDistance, groundMask))
