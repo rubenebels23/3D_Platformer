@@ -27,6 +27,7 @@ public class Enemy : MonoBehaviour
     private bool playerInSightRange;
     private bool playerInAttackRange;
 
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -86,9 +87,7 @@ public class Enemy : MonoBehaviour
     void AttackPlayer()
     {
         agent.isStopped = true;
-        agent.SetDestination(transform.position);
         transform.LookAt(player);
-
         animator.SetBool("isAttacking", true);
 
         if (!alreadyAttacked)

@@ -162,8 +162,6 @@ public class PlayerMovement : MonoBehaviour
 
         }
 
-        //! Niwuwe falling animatie toevoegen als je valt dan kan dit verholpen worden 
-
 
         else if (Input.GetKeyDown(KeyCode.Space) && !groundedPlayer && airJumpAvailable)
         {
@@ -214,7 +212,6 @@ public class PlayerMovement : MonoBehaviour
 
 
     }
-
 
     // Runs after Update() every frame
     void LateUpdate()

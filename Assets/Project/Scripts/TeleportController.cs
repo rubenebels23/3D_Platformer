@@ -29,7 +29,6 @@ public class TeleportController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.T))
         {
             TryTeleport();
-
         }
     }
 
@@ -59,7 +58,12 @@ public class TeleportController : MonoBehaviour
             Vector3 targetPosition = hitInfo.point;
 
             // 4️⃣ Raise slightly to avoid clipping
-            targetPosition.y += 1f;
+
+            //raise it more if in air to avoid bug with staying in the air because of the animation
+            if (!playerMovement.groundedPlayer)
+                targetPosition.y += 3f;
+            else
+                targetPosition.y += 1f;
 
 
             // 4b)  Get the CharacterController
