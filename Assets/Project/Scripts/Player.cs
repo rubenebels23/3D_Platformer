@@ -30,6 +30,10 @@ public class Player : MonoBehaviour
 
 
     public GameObject deathScreen;
+
+
+    public AudioSource deathSound;   // <-- drag the AudioSource here
+
     void Start()
     {
         movement = GetComponent<PlayerMovement>();
@@ -121,23 +125,29 @@ public class Player : MonoBehaviour
         foreach (var m in allMusic)
             m.StopMusicImmediate();
 
-        // Show YOU DIED UI
+        // Show YOU DIED screen
         deathScreen.SetActive(true);
 
-        // Start 2-second wait, then respawn
+        // Play death sound ONCE
+        if (deathSound != null)
+            deathSound.Play();
+
+        // Wait, then respawn
         StartCoroutine(DeathSequence());
     }
 
     private IEnumerator DeathSequence()
     {
+        // Screen visible for 2 seconds
         yield return new WaitForSeconds(5f);
 
-        // Hide death screen
+        // Hide UI
         deathScreen.SetActive(false);
 
         // Respawn player
         Respawn();
     }
+
 
 
     public void Respawn()
