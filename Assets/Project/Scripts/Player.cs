@@ -1,4 +1,7 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Collections;
+
 
 public class Player : MonoBehaviour
 {
@@ -25,6 +28,8 @@ public class Player : MonoBehaviour
 
     private PlayerMovement movement;
 
+
+    public GameObject deathScreen;
     void Start()
     {
         movement = GetComponent<PlayerMovement>();
@@ -111,14 +116,28 @@ public class Player : MonoBehaviour
     {
         Debug.Log("Player died!");
 
-        // Stop boss music immediately
-        BossMusic bm = FindAnyObjectByType<BossMusic>();
-        if (bm != null)
-            bm.StopMusicImmediate();
+        // Stop all boss music
+        BossMusic[] allMusic = FindObjectsByType<BossMusic>(FindObjectsSortMode.None);
+        foreach (var m in allMusic)
+            m.StopMusicImmediate();
 
-        Respawn();
+        // Show YOU DIED UI
+        deathScreen.SetActive(true);
+
+        // Start 2-second wait, then respawn
+        StartCoroutine(DeathSequence());
     }
 
+    private IEnumerator DeathSequence()
+    {
+        yield return new WaitForSeconds(5f);
+
+        // Hide death screen
+        deathScreen.SetActive(false);
+
+        // Respawn player
+        Respawn();
+    }
 
 
     public void Respawn()
