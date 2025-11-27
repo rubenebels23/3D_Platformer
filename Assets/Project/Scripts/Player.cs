@@ -17,6 +17,10 @@ public class Player : MonoBehaviour
     public BloodBar BloodBar;
 
     public Animator animator;
+
+    private CharacterController controller;
+
+
     #endregion
 
     private PlayerMovement movement;
@@ -24,6 +28,8 @@ public class Player : MonoBehaviour
     void Start()
     {
         movement = GetComponent<PlayerMovement>();
+        controller = GetComponent<CharacterController>();
+
 
         currentStamina = maxStamina;
         StaminaBar.SetMaxStamina(maxStamina);
@@ -105,14 +111,19 @@ public class Player : MonoBehaviour
     {
         Debug.Log("Player died!");
 
-        // Destroy(gameObject);
-        Respawn();
+        // Stop boss music immediately
+        BossMusic bm = FindAnyObjectByType<BossMusic>();
+        if (bm != null)
+            bm.StopMusicImmediate();
 
+        Respawn();
     }
+
+
 
     public void Respawn()
     {
-        
+
         // Debug.Log("AAAAA");
         currentBlood = maxBlood;
         BloodBar.SetBlood(currentBlood);
@@ -122,12 +133,15 @@ public class Player : MonoBehaviour
 
 
         // Move player
-        transform.position = new Vector3(-55.86f, 0.5f, 8.7f);
+
+        controller.enabled = false;
+        transform.position = new Vector3(81.38f, 0.5f, 1071.89f);
         Debug.Log("Player respawned at the checkpoint.");
+        controller.enabled = true;
 
 
 
-        
+
     }
     // STAMINA
     public void TakeDamageStamina(float amount)
