@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class CoinPickup : MonoBehaviour
 {
@@ -37,8 +38,43 @@ public class CoinPickup : MonoBehaviour
 
     void Collect()
     {
+        // Hide pickup text
         pickupText.SetActive(false);
-        Destroy(gameObject);
-        Debug.Log("Coin collected!");
+
+        // Trigger win screen
+        StartCoroutine(WinSequence());
+
+        // Destroy the coin visual immediately
+        GetComponent<MeshRenderer>().enabled = false;
+        GetComponent<Collider>().enabled = false;
     }
+
+    public GameObject winScreen;   // assign in Inspector
+    public Player playerScript;    // assign player
+
+    private IEnumerator WinSequence()
+    {
+        // Stop player movement
+        playerScript.enabled = false;
+
+        // Show win screen
+        winScreen.SetActive(true);
+
+        // Wait 5 seconds
+        yield return new WaitForSeconds(5f);
+
+        // Hide screen
+        winScreen.SetActive(false);
+
+        // Respawn player (same as your normal respawn)
+        playerScript.Respawn();
+
+        // Re-enable movement
+        playerScript.enabled = true;
+
+        // Destroy coin object entirely
+        Destroy(gameObject);
+    }
+
+
 }

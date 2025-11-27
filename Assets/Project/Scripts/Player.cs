@@ -34,6 +34,12 @@ public class Player : MonoBehaviour
 
     public AudioSource deathSound;   // <-- drag the AudioSource here
 
+    private bool isDead = false;
+
+    public GameObject coin;
+
+
+
     void Start()
     {
         movement = GetComponent<PlayerMovement>();
@@ -118,6 +124,9 @@ public class Player : MonoBehaviour
 
     public void Die()
     {
+        if (isDead) return;  // <--- prevents double-death
+        isDead = true;
+
         Debug.Log("Player died!");
 
         // Stop all boss music
@@ -132,13 +141,13 @@ public class Player : MonoBehaviour
         if (deathSound != null)
             deathSound.Play();
 
-        // Wait, then respawn
         StartCoroutine(DeathSequence());
     }
 
+
     private IEnumerator DeathSequence()
     {
-        // Screen visible for 2 seconds
+        // Screen visible for 5 seconds
         yield return new WaitForSeconds(5f);
 
         // Hide UI
@@ -152,7 +161,7 @@ public class Player : MonoBehaviour
 
     public void Respawn()
     {
-
+        isDead = false;
         // Debug.Log("AAAAA");
         currentBlood = maxBlood;
         BloodBar.SetBlood(currentBlood);
@@ -167,9 +176,6 @@ public class Player : MonoBehaviour
         transform.position = new Vector3(81.38f, 0.5f, 1071.89f);
         Debug.Log("Player respawned at the checkpoint.");
         controller.enabled = true;
-
-
-
 
     }
     // STAMINA
