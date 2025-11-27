@@ -5,10 +5,9 @@ public class BloodBar : MonoBehaviour
 {
     public Slider slider;
 
-    public void SetMaxBlood(float blood)
+    public void SetMaxBlood(float maxBlood)
     {
-        slider.maxValue = blood;
-        slider.value = blood;
+        slider.maxValue = maxBlood;
     }
 
     public void SetBlood(float blood)

@@ -1,31 +1,41 @@
 using UnityEngine;
 
+// Ensure this runs before your PlayerMovement LateUpdate
+[DefaultExecutionOrder(-1000)]
 public class VelocityCalculator : MonoBehaviour
 {
-    private Vector3 _previousPos;
-    public Vector3 Delta { get; private set; }   // platform displacement this frame
+    // Per-frame deltas (world space)
+    public Vector3 FramePositionDelta { get; private set; }
+    public Quaternion FrameRotationDelta { get; private set; }
 
-    public SpinningPlatform platform;
+    private Vector3 _prevPos;
+    private Quaternion _prevRot;
 
-    void Start() => _previousPos = transform.position; //for the first frame
-
-    void LateUpdate() // after all Updates moved it
+    void Awake()
     {
-        Delta = transform.position - _previousPos;// calculate how far it moved
-        _previousPos = transform.position;
+        _prevPos = transform.position;
+        _prevRot = transform.rotation;
+        FramePositionDelta = Vector3.zero;
+        FrameRotationDelta = Quaternion.identity;
     }
 
-    // player script gets the platform's velocity from here
-    public Vector3 GetVelocity(Transform playerPos)
+    // Compute how the platform actually moved BETWEEN frames
+    void LateUpdate()
     {
-        Vector3 positionDifference = Delta * Time.deltaTime;
-        if (platform != null)
-        {
-            Quaternion rotation = Quaternion.Euler(platform.RotateSpeedX * Time.deltaTime, platform.RotateSpeedY * Time.deltaTime, platform.RotateSpeedZ * Time.deltaTime);
-            Vector3 position = rotation * (playerPos.position - platform.transform.position);
+        FramePositionDelta = transform.position - _prevPos;
+        FrameRotationDelta = transform.rotation * Quaternion.Inverse(_prevRot);
 
-            positionDifference += position - (playerPos.position - platform.transform.position);
-        }
-        return positionDifference;
+        _prevPos = transform.position;
+        _prevRot = transform.rotation;
+    }
+
+    // Displacement for a world point standing on the platform this frame.
+    // Uses last frame's pivot (_prevPos) to compute pure rotational displacement.
+    public Vector3 GetDisplacementAtPoint(Vector3 worldPoint)
+    {
+        Vector3 rPrev = worldPoint - _prevPos;                // point relative to last frame's pivot
+        Vector3 rNow  = FrameRotationDelta * rPrev;           // rotate it by the actual frame rotation
+        Vector3 rotDisp = rNow - rPrev;                       // rotational displacement
+        return FramePositionDelta + rotDisp;                  // + linear displacement
     }
 }

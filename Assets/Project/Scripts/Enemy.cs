@@ -27,6 +27,14 @@ public class Enemy : MonoBehaviour
     private bool playerInSightRange;
     private bool playerInAttackRange;
 
+    private float patrolTurnTimer = 0f;
+    public float patrolTurnInterval = 5f;
+
+    private bool waitingAfterTurn = false;
+    public float waitAfterTurn = 1.5f; // how long he waits before new walkpoint
+    private float waitTimer = 0f;
+
+
 
     void Start()
     {
@@ -57,8 +65,40 @@ public class Enemy : MonoBehaviour
 
     void Patroling()
     {
-        agent.isStopped = false;  // <-- important
+        agent.isStopped = false;
 
+
+        // 1. HANDLE WAITING AFTER TURN
+
+        if (waitingAfterTurn)
+        {
+            waitTimer += Time.deltaTime;
+            if (waitTimer >= waitAfterTurn)
+            {
+                waitingAfterTurn = false;
+                waitTimer = 0f;
+                walkPointSet = false; // NOW search a new walk point
+            }
+            return; // stop patrolling until waiting is done
+        }
+
+
+        // 2. TIMER TO ROTATE EVERY X SECONDS
+
+        patrolTurnTimer += Time.deltaTime;
+        if (patrolTurnTimer >= patrolTurnInterval)
+        {
+            transform.Rotate(0, 180f, 0);   // Turn around
+            patrolTurnTimer = 0f;
+
+            // Start waiting phase
+            waitingAfterTurn = true;
+            return;
+        }
+
+
+        // 3. NORMAL PATROLLING BEHAVIOR
+ 
         if (!walkPointSet) SearchWalkPoint();
         if (walkPointSet) agent.SetDestination(walkPoint);
 

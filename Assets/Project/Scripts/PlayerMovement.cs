@@ -47,6 +47,9 @@ public class PlayerMovement : MonoBehaviour
     #endregion --- all variables ---
 
 
+    public bool skipOneLateUpdate = false;
+
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -79,6 +82,13 @@ public class PlayerMovement : MonoBehaviour
             isSprinting = false;
             animator.SetBool("isSprinting", false);
         }
+
+        if (!isMoving)
+        {
+            isSprinting = false;
+            animator.SetBool("isSprinting", false);
+        }
+
         //* Ground check
         groundedPlayer = Physics.CheckSphere(transform.position - new Vector3(0, controller.height / 2, 0), 0.25f, groundMask);
 
@@ -169,7 +179,7 @@ public class PlayerMovement : MonoBehaviour
             airJumpAvailable = false;
             if (player != null)
                 player.TakeDamageStamina(jumpCost);
-            animator.SetTrigger("isJumping");
+            animator.SetTrigger("isJumping");   
         }
 
 
@@ -216,37 +226,28 @@ public class PlayerMovement : MonoBehaviour
     // Runs after Update() every frame
     void LateUpdate()
     {
+        if (!groundedPlayer) return;
 
-        // 1) Only do this if we're standing on something
-        //
-        if (groundedPlayer == false)
-            return;
-
-        //2) Shoot a ray straight down to see what’s below the player
-        RaycastHit hitInfo;
+        RaycastHit hit;
         bool hitSomething = Physics.Raycast(
-            transform.position,       // start at player position
-            Vector3.down,             // cast straight down
-            out hitInfo,              // store info about what we hit
-            controller.height + 0.5f, // how far the ray goes
-            groundMask                // only hit ground layers
+            transform.position,
+            Vector3.down,
+            out hit,
+            controller.height + 0.5f,
+            groundMask
         );
-        if (hitSomething == false)
-            return;
+        if (!hitSomething) return;
 
-        //3) Check if what we hit is a moving platform
-        VelocityCalculator platform = hitInfo.collider.GetComponent<VelocityCalculator>();
-        if (platform == null)
-            return;
+        // Get the motion provider on the thing we're standing on
+        VelocityCalculator motion = hit.collider.GetComponent<VelocityCalculator>();
+        if (motion == null) return;
 
-        //4) Get how far the platform moved this frame
-        Vector3 platformMovement = platform.GetVelocity(transform);
-        if (platformMovement == Vector3.zero)
-            return;
-
-        //5) Move the player by the same amount so it stays in sync
-        controller.Move(platformMovement);
+        // Move by the platform's actual displacement at our point
+        Vector3 disp = motion.GetDisplacementAtPoint(transform.position);
+        if (disp.sqrMagnitude > 0f)
+            controller.Move(disp);
     }
+
 
     //Reference to teleport the player
     public void TeleportTo(Vector3 newPos)

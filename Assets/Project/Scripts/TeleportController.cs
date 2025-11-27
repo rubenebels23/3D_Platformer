@@ -60,14 +60,16 @@ public class TeleportController : MonoBehaviour
             // 4️⃣ Raise slightly to avoid clipping
 
             //raise it more if in air to avoid bug with staying in the air because of the animation
-            if (!playerMovement.groundedPlayer)
-                targetPosition.y += 3f;
-            else
-                targetPosition.y += 1f;
+            // 4️⃣ Fix: safer height offset
+            CharacterController cc = playerMovement.GetComponent<CharacterController>();
+
+            // always offset a tiny bit above ground
+            targetPosition.y += cc.skinWidth + 0.05f;
+
 
 
             // 4b)  Get the CharacterController
-            CharacterController cc = playerMovement.GetComponent<CharacterController>();
+            // CharacterController cc = playerMovement.GetComponent<CharacterController>();
 
             // figure out where the capsule would be at the target
             Vector3 bottom = targetPosition + Vector3.up * cc.radius;

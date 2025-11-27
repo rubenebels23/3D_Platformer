@@ -11,8 +11,12 @@ public class Player : MonoBehaviour
 
     #region Blood (Health)
     public float maxBlood = 100f;
+
+    public float startBlood = 80f;
     public float currentBlood;
     public BloodBar BloodBar;
+
+    public Animator animator;
     #endregion
 
     private PlayerMovement movement;
@@ -23,9 +27,11 @@ public class Player : MonoBehaviour
 
         currentStamina = maxStamina;
         StaminaBar.SetMaxStamina(maxStamina);
+        StaminaBar.SetStamina(currentStamina);
 
-        currentBlood = maxBlood;
+        currentBlood = startBlood;
         BloodBar.SetMaxBlood(maxBlood);
+        BloodBar.SetBlood(currentBlood);
     }
 
     void Update()
@@ -58,11 +64,14 @@ public class Player : MonoBehaviour
         {
             movement.jumpHeight = 0f;
             movement.jumpCost = 0f;
+            // animator.SetBool("isJumping", true);
+
         }
         else
         {
             movement.jumpHeight = 6f;
             movement.jumpCost = 10f;
+            // animator.SetBool("isJumping", false);
         }
     }
 
@@ -103,26 +112,22 @@ public class Player : MonoBehaviour
 
     public void Respawn()
     {
+        
         // Debug.Log("AAAAA");
-
         currentBlood = maxBlood;
         BloodBar.SetBlood(currentBlood);
 
         currentStamina = maxStamina;
         StaminaBar.SetStamina(currentStamina);
 
-        CharacterController controller = GetComponent<CharacterController>();
-        if (controller != null)
-            controller.enabled = false;
 
         // Move player
-        transform.position = new Vector3(-57.24f, 1f, 8.7f);
+        transform.position = new Vector3(-55.86f, 0.5f, 8.7f);
+        Debug.Log("Player respawned at the checkpoint.");
 
-        // Re-enable controller
-        if (controller != null)
-            controller.enabled = true;
 
-        Debug.Log("Player respawned!");
+
+        
     }
     // STAMINA
     public void TakeDamageStamina(float amount)
