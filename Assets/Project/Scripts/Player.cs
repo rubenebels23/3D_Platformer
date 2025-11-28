@@ -172,10 +172,11 @@ public class Player : MonoBehaviour
         currentStamina = maxStamina;
         StaminaBar.SetStamina(currentStamina);
 
-        // TURN OFF WALLS ON RESPAWN
-        GameObject arenaWalls = GameObject.Find("Arenawalls");
-        if (arenaWalls != null)
-            arenaWalls.SetActive(false);
+        // RESET TRAP AND WALLS
+        if (arenaTrigger != null)
+        {
+            arenaTrigger.ResetTrigger();
+        }
 
         // RESET ALL BLOOD POTIONS
         BloodPotion[] bloodPotions = FindObjectsByType<BloodPotion>(FindObjectsSortMode.InstanceID);
@@ -189,6 +190,7 @@ public class Player : MonoBehaviour
         transform.position = new Vector3(81.38f, 0.5f, 1071.89f);
         controller.enabled = true;
     }
+
 
 
 

@@ -1,28 +1,27 @@
-using UnityEngine;
+    using UnityEngine;
 
-public class ArenaTrigger : MonoBehaviour
-{
-    public GameObject walls;   // assign your walls parent here
-    private bool hasActivated = false;
-
-    private void OnTriggerEnter(Collider other)
+    public class ArenaTrigger : MonoBehaviour
     {
-        if (hasActivated) return;                // already triggered once
-        if (!other.CompareTag("Player")) return; // only react to player
+        public GameObject walls;
+        private bool hasActivated = false;
 
-        walls.SetActive(true);                   // show walls
-        hasActivated = true;                     // lock trigger
+        private void OnTriggerEnter(Collider other)
+        {
+            if (hasActivated) return;
+            if (!other.CompareTag("Player")) return;
+
+            walls.SetActive(true);
+            hasActivated = true;
+        }
+
+        public void ResetTrigger()
+        {
+            Debug.Log("ArenaTrigger: Resetting trigger and walls.");
+            hasActivated = false;
+            walls.SetActive(false);      // <-- REQUIRED FIX
+            gameObject.SetActive(true);  // ensure trigger reactivates
+        }
+
+
+        
     }
-
-    // Call this from your player death code:
-    public void RemoveWalls()
-    {
-        walls.SetActive(false);
-    }
-
-    public void ResetTrigger()
-    {
-        hasActivated = false;
-    }
-
-}
