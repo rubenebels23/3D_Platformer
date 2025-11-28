@@ -19,4 +19,10 @@ public class ArenaTrigger : MonoBehaviour
     {
         walls.SetActive(false);
     }
+
+    public void ResetTrigger()
+    {
+        hasActivated = false;
+    }
+
 }

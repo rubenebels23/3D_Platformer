@@ -5,9 +5,9 @@ public class TeleportController : MonoBehaviour
     [Header("References")]
     public PlayerMovement playerMovement;
     public Camera playerCamera;
-    public float maxTeleportDistance = 20f;
+    public float maxTeleportDistance = 60f;
     public LayerMask groundMask;
-    public float teleportCooldown = 5f;
+    public float teleportCooldown = 30f;
 
     private float cooldownRemaining = 0f;
     private Player player;
@@ -87,7 +87,7 @@ public class TeleportController : MonoBehaviour
 
             // 5️⃣ Teleport
             playerMovement.TeleportTo(targetPosition);
-            player.TakeDamageBlood(20f);
+            player.TakeDamageBlood(5f);
             cooldownRemaining = teleportCooldown; //  reset cooldown
 
             Debug.Log($"Teleported to {targetPosition}");

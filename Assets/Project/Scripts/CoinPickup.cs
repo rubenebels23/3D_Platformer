@@ -66,15 +66,27 @@ public class CoinPickup : MonoBehaviour
         // Hide screen
         winScreen.SetActive(false);
 
-        // Respawn player (same as your normal respawn)
+        // Respawn player (normal respawn)
         playerScript.Respawn();
 
         // Re-enable movement
         playerScript.enabled = true;
 
-        // Destroy coin object entirely
-        Destroy(gameObject);
+        // Reset coin (reactivate visuals)
+        ResetCoin();
     }
+
+
+    public void ResetCoin()
+    {
+        // reactivate visuals and collider
+        GetComponent<MeshRenderer>().enabled = true;
+        GetComponent<Collider>().enabled = true;
+
+        // hide UI text
+        pickupText.SetActive(false);
+    }
+
 
 
 }

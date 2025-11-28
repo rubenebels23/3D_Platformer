@@ -39,6 +39,9 @@ public class Player : MonoBehaviour
     public GameObject coin;
 
 
+    public ArenaTrigger arenaTrigger;
+
+
 
     void Start()
     {
@@ -162,26 +165,46 @@ public class Player : MonoBehaviour
     public void Respawn()
     {
         isDead = false;
-        // Debug.Log("AAAAA");
+
         currentBlood = maxBlood;
         BloodBar.SetBlood(currentBlood);
 
         currentStamina = maxStamina;
         StaminaBar.SetStamina(currentStamina);
 
+        // TURN OFF WALLS ON RESPAWN
+        GameObject arenaWalls = GameObject.Find("Arenawalls");
+        if (arenaWalls != null)
+            arenaWalls.SetActive(false);
+
+        // RESET ALL BLOOD POTIONS
+        BloodPotion[] bloodPotions = FindObjectsByType<BloodPotion>(FindObjectsSortMode.InstanceID);
+        foreach (BloodPotion bp in bloodPotions)
+        {
+            bp.ResetPotion();
+        }
 
         // Move player
-
         controller.enabled = false;
         transform.position = new Vector3(81.38f, 0.5f, 1071.89f);
-        Debug.Log("Player respawned at the checkpoint.");
         controller.enabled = true;
-
     }
+
+
+
     // STAMINA
     public void TakeDamageStamina(float amount)
     {
         currentStamina = Mathf.Max(0f, currentStamina - amount);
         StaminaBar.SetStamina(currentStamina);
     }
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.collider.CompareTag("Respawn"))
+        {
+            Die();
+        }
+    }
+
 }
