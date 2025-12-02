@@ -48,3 +48,32 @@ After 5 seconds you respawn at the checkpoint.
 
 Survive all traps, enemies and make it to the end of the level without losing all your blood.
 Master timing, movement, and stamina to escape the arena and win!
+
+
+2️⃣ Open the Full Project in Unity
+
+If you want to open or edit the project:
+
+Click the green ⬇ Code button.
+
+Choose Download ZIP (or clone with Git).
+
+Extract the ZIP file.
+
+Open Unity Hub.
+
+Click Add project → select the folder you extracted.
+
+Use the same Unity version the game was created in:
+Unity 6000.0.58f1 LTS.
+Open the project and press Play.
+
+✔️ System Requirements
+
+Windows 10/11
+
+GPU with basic 3D support
+
+~1.5 GB free storage
+
+Mouse + Keyboard
