@@ -1,36 +1,50 @@
-# Vampire 3D Platformer
+🎮 How to Play — Vampire vs GarlicMan
 
-A 3D platformer prototype built in **Unity 6 LTS** (C#).  
-Developed from scratch to practice and explore core platformer mechanics.
+Welcome to Vampire vs GarlicMan!
+🧍 Movement & Controls
 
----
+W / A / S / D — Move
 
-## 🛠️ Tech Stack
-- Unity 6 LTS  
-- C#  
-- Git + GitHub  
-- VS Code  
+Mouse — Look around
 
----
+Space — Jump
 
-## 🚀 Roadmap
-- [x] Project setup and scene flow  
-- [x] Graybox test level  
-- [x] Basic WASD movement  
-- [ ] Jumping + gravity  
-- [ ] Death floor respawn  
-- [ ] Goal trigger  
-- [ ] Camera smoothing  
-- [ ] Extra mechanics (dash, double-jump, wall-run)  
-- [ ] Visual polish  
+Left Shift — Sprint (uses stamina)
 
----
+E — Interact (For pickup)
 
-## ⚡ How to Play
-1. Clone this repository  
-2. Open with Unity Hub (Unity 6 LTS)  
-3. Open scene `10_Prototype_Movement`  
-4. Press **Play**  
-5. Controls: **WASD** to move  
+T - Teleport (30 seconds between uses)
 
----
+❤️ Blood (Health)
+
+If your blood reaches 0, you die.
+
+Blood can be restored using Blood Potions found in the level.
+
+Enemies and traps lower your blood.
+
+⚡ Stamina
+
+Sprinting and jumping drains stamina.
+
+If stamina is empty → you slow down.
+
+It refills automatically when not sprinting or jumping.
+
+🪙 Coins
+
+A coin spawns in the arena.
+
+When you die and respawn (or win the game), the coin also resets.
+
+⚔️ Enemies
+
+Getting hit deals damage and will kill you.
+
+After 5 seconds you respawn at the checkpoint.
+
+
+🎯 Goal of the Game
+
+Survive all traps, enemies and make it to the end of the level without losing all your blood.
+Master timing, movement, and stamina to escape the arena and win!
